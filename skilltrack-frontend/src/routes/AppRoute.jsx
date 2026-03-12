@@ -7,6 +7,7 @@ import EmployeeDashboard from "../pages/EmployeeDashboard";
 import ProgressTracker from "../pages/ProgressTracker";
 import ConsistencyTracker from "../pages/ConsistencyTracker";
 import CompletedSkills from "../pages/CompletedSkills";
+import Profile from "../pages/Profile"
 
 
 import DashboardLayout from "../layouts/DashboardLayout";
@@ -45,6 +46,10 @@ const AppRoutes = () => {
             path="completed"
             element={<CompletedSkills/>}
             />
+
+            <Route 
+            path="profile"
+            element={<Profile/>}/>
 
         </Route>
 

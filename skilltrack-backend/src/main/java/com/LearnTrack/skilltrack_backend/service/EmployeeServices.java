@@ -28,5 +28,9 @@ public class EmployeeServices {
         return employeeRepository.count();
     }
 
+    public EmployeeEntity getEmployeeById(Long id){
+        return employeeRepository.findById(id).orElseThrow();
+    }
+
 
 }

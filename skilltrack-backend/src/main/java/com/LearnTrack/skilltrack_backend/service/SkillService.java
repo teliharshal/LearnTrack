@@ -37,7 +37,7 @@ public class SkillService {
     }
 
     public List<EmployeeSkillEntity> getCompletedStatus(){
-        return employeeSkillRepository.findByStatus("Completed");
+        return employeeSkillRepository.findByStatus("COMPLETED");
     }
 
     public Long getRemainingDays(Long id){

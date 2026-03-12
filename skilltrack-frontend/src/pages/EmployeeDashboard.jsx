@@ -177,13 +177,13 @@ const handleAddSkill = async () => {
 
     <div className="flex bg-gray-100 min-h-screen">
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu
       <button
         onClick={() => setMenuOpen(!menuOpen)}
         className="md:hidden fixed top-4 right-4 z-50 bg-blue-600 text-white p-2 rounded"
       >
         <FaBars />
-      </button>
+      </button> */}
 
       {/* Sidebar
       <div
