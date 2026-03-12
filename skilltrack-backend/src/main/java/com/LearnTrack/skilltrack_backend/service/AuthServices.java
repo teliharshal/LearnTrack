@@ -1,8 +1,8 @@
 package com.LearnTrack.skilltrack_backend.service;
 
+import com.LearnTrack.skilltrack_backend.dto.LoginResponse;
 import com.LearnTrack.skilltrack_backend.entity.EmployeeEntity;
 import com.LearnTrack.skilltrack_backend.repository.EmployeeRepository;
-import com.LearnTrack.skilltrack_backend.security.Jwtutil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,12 +10,9 @@ import org.springframework.stereotype.Service;
 public class AuthServices {
 
     @Autowired
-    private  EmployeeRepository repository;
+    private EmployeeRepository repository;
 
-    @Autowired
-    private Jwtutil jwtutil;
-
-    public String login(String email,String password){
+    public LoginResponse login(String email, String password){
 
         EmployeeEntity employee =
                 repository.findByEmail(email)
@@ -25,6 +22,19 @@ public class AuthServices {
             throw new RuntimeException("Invalid Password");
         }
 
-        return jwtutil.generateToken(employee.getEmail(), employee.getRole());
+        return new LoginResponse(
+                employee.getId(),
+                employee.getName(),
+                employee.getEmail(),
+                employee.getRole()
+        );
+    }
+
+    public EmployeeEntity registerEmployee(EmployeeEntity employee) {
+
+        // default role
+        employee.setRole("ROLE_EMPLOYEE");
+
+        return repository.save(employee);
     }
 }

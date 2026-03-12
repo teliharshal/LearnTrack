@@ -40,5 +40,4 @@ public class SkillEntity {
     private Long id;
     private String skillName;
     private String category;
-
 }

@@ -27,4 +27,6 @@ public class EmployeeServices {
     public long getTotalEmployee(){
         return employeeRepository.count();
     }
+
+
 }

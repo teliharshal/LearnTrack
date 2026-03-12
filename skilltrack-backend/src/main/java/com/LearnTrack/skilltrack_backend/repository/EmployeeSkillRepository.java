@@ -7,5 +7,6 @@ import java.util.List;
 
 public interface EmployeeSkillRepository extends JpaRepository<EmployeeSkillEntity , Long> {
     List<EmployeeSkillEntity> findByEmployeeId(Long employeeId);
+
     List<EmployeeSkillEntity> findByStatus(String status);
 }

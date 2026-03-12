@@ -1,92 +1,105 @@
 package com.LearnTrack.skilltrack_backend.entity;
 
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import lombok.Data;
-
+import jakarta.persistence.*;
 import java.time.LocalDate;
 
 @Entity
-@Data
+@Table(name = "employee_skill_entity")
 public class EmployeeSkillEntity {
 
-    public long getId() {
-        return id;
-    }
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    public Long getEmployeeId() {
-        return employeeId;
-    }
+    private Long employeeId;
 
-    public LocalDate getStartDate() {
-        return startDate;
-    }
+    private String skillName;
 
-    public Long getSkillId() {
-        return skillId;
-    }
+    private String category;
 
-    public int getTargetDurationDays() {
-        return targetDurationDays;
+    private int progressPercentage;
+
+    private LocalDate startDate;
+
+    public void setEndDate(LocalDate enDate) {
+        this.endDate = enDate;
     }
 
     public LocalDate getEndDate() {
         return endDate;
     }
 
-    public int getProgressPercentage() {
-        return progressPercentage;
+    private LocalDate endDate;
+
+    private String status;
+
+    // ADD THIS FIELD
+    private int targetDurationDays;
+
+    // getters and setters
+
+    public Long getId() {
+        return id;
     }
 
-    public String getStatus() {
-        return status;
-    }
-
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getEmployeeId() {
+        return employeeId;
     }
 
     public void setEmployeeId(Long employeeId) {
         this.employeeId = employeeId;
     }
 
-    public void setSkillId(Long skillId) {
-        this.skillId = skillId;
+    public String getSkillName() {
+        return skillName;
     }
 
-    public void setStartDate(LocalDate startDate) {
-        this.startDate = startDate;
+    public void setSkillName(String skillName) {
+        this.skillName = skillName;
     }
 
-    public void setTargetDurationDays(int targetDurationDays) {
-        this.targetDurationDays = targetDurationDays;
+    public String getCategory() {
+        return category;
     }
 
-    public void setEndDate(LocalDate endDate) {
-        this.endDate = endDate;
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public int getProgressPercentage() {
+        return progressPercentage;
     }
 
     public void setProgressPercentage(int progressPercentage) {
         this.progressPercentage = progressPercentage;
     }
 
+    public LocalDate getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
     public void setStatus(String status) {
         this.status = status;
     }
 
-    @Id
-     @GeneratedValue(strategy = GenerationType.IDENTITY)
-     private long id;
+    // NEW FIELD GETTER/SETTER
+    public int getTargetDurationDays() {
+        return targetDurationDays;
+    }
 
-    private Long employeeId;
-    private Long skillId;
-    private LocalDate startDate;
-    private int targetDurationDays;
-    private LocalDate endDate;
-    private int progressPercentage;
-    private String status;
-
+    public void setTargetDurationDays(int targetDurationDays) {
+        this.targetDurationDays = targetDurationDays;
+    }
 }

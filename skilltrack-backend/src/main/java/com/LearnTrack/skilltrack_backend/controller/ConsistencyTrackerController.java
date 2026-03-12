@@ -10,6 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(value = "api/consistency")
+@CrossOrigin(origins = "http://localhost:5173")
 public class ConsistencyTrackerController {
 
     @Autowired
