@@ -17,6 +17,17 @@ public class EmployeeSkillEntity {
 
     private String category;
 
+    public String getLevel() {
+        return level;
+    }
+
+    public void setLevel(String level) {
+        this.level = level;
+    }
+
+    @Column(name = "level")
+    private String level;
+
     private int progressPercentage;
 
     private LocalDate startDate;
@@ -34,7 +45,7 @@ public class EmployeeSkillEntity {
     private String status;
 
     // ADD THIS FIELD
-    private int targetDurationDays;
+    private Integer targetDurationDays;
 
     // getters and setters
 

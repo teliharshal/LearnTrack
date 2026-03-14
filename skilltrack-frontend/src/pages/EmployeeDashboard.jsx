@@ -1,38 +1,53 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+
 import axios from "axios";
 
 import {
   FaChartLine,
   FaFire,
   FaCheckCircle,
-  FaBars,
-  FaCode,
-  FaDatabase,
-  FaServer,
-  FaLaptopCode,
-  FaTools
+  FaCode
 } from "react-icons/fa";
+
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  ArcElement,
+  PointElement,
+  LineElement,
+  Tooltip,
+  Legend
+} from "chart.js";
+
+import { Bar, Pie, Line } from "react-chartjs-2";
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  ArcElement,
+  PointElement,
+  LineElement,
+  Tooltip,
+  Legend
+);
 
 const EmployeeDashboard = () => {
 
   const [skills, setSkills] = useState([]);
+  
 
-  const [skillName, setSkillName] = useState("");
-  const [category, setCategory] = useState("");
-  const [duration, setDuration] = useState("");
-
-  const [menuOpen, setMenuOpen] = useState(false);
   const employeeId = Number(localStorage.getItem("employeeId"));
-  const navigate = useNavigate();
 
   useEffect(() => {
     fetchSkills();
   }, []);
 
-  // Fetch skills
   const fetchSkills = async () => {
     try {
+
       const res = await axios.get(
         `http://localhost:8080/api/employee/skills/${employeeId}`
       );
@@ -44,385 +59,164 @@ const EmployeeDashboard = () => {
     }
   };
 
-  // Logout
-  const handleLogout = () => {
-    navigate("/");
-  };
+  // Dashboard Stats
+  const totalSkills = skills.length;
+  const completed = skills.filter(s => s.progressPercentage === 100).length;
+  const inProgress = skills.filter(s => s.progressPercentage < 100).length;
 
-  // Add Skill
-const handleAddSkill = async () => {
-
-  if (!skillName || !category || !duration) {
-    alert("Please fill all fields");
-    return;
-  }
-
-  try {
-
-    const employeeId = Number(localStorage.getItem("employeeId"));
-
-    console.log("Employee ID sending:", employeeId);
-
-    await axios.post(
-      "http://localhost:8080/api/employee/skills/add",
-      {
-        employeeId: employeeId,
-        skillName: skillName,
-        category: category,
-        progressPercentage: 0,
-        targetDurationDays: Number(duration)
+  // Chart Options
+  const chartOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: {
+      position: "bottom",
+      labels: {
+        usePointStyle: true,
+        pointStyle: "circle",
+        padding: 20,
+        font: {
+          size: 12
+        }
       }
-    );
-
-    setSkillName("");
-    setCategory("");
-    setDuration("");
-
-    fetchSkills();
-
-  } catch (error) {
-    console.error(error);
+    }
   }
-
 };
 
-  // Update progress
-  const updateProgress = async (skillId, currentProgress) => {
-
-    try {
-
-      const newProgress = Math.min(currentProgress + 10, 100);
-
-      await axios.put(
-        `http://localhost:8080/api/employee/skills/progress/${skillId}`,
-        {
-          progressPercentage: newProgress
-        }
-      );
-
-      fetchSkills();
-
-    } catch (error) {
-      console.error(error);
-    }
-
+  // Category Chart
+  const categoryData = {
+    labels: ["Programming", "Frontend", "Backend", "Database", "DevOps"],
+    datasets: [
+      {
+        label: "Skills",
+        data: [
+          skills.filter(s => s.category === "Programming").length,
+          skills.filter(s => s.category === "Frontend").length,
+          skills.filter(s => s.category === "Backend").length,
+          skills.filter(s => s.category === "Database").length,
+          skills.filter(s => s.category === "DevOps").length
+        ],
+        backgroundColor: [
+          "#3B82F6",
+          "#8B5CF6",
+          "#10B981",
+          "#F59E0B",
+          "#EF4444"
+        ]
+      }
+    ]
   };
 
-  // Skill Icon
-  const getCategoryIcon = (category) => {
-
-    switch (category) {
-
-      case "Programming":
-        return <FaCode className="text-blue-600 text-xl" />;
-
-      case "Frontend":
-        return <FaLaptopCode className="text-purple-600 text-xl" />;
-
-      case "Backend":
-        return <FaServer className="text-green-600 text-xl" />;
-
-      case "Database":
-        return <FaDatabase className="text-yellow-600 text-xl" />;
-
-      case "DevOps":
-        return <FaTools className="text-red-600 text-xl" />;
-
-      default:
-        return <FaCode className="text-gray-600 text-xl" />;
-
-    }
-
+  // Progress Chart
+  const progressData = {
+    labels: skills.map(s => s.skillName),
+    datasets: [
+      {
+        label: "Progress %",
+        data: skills.map(s => s.progressPercentage),
+        backgroundColor: "#3B82F6"
+      }
+    ]
   };
 
-  // Remaining Days
-  const getRemainingDays = (startDate, duration) => {
-
-    if (!startDate || !duration) return "-";
-
-    const start = new Date(startDate);
-    const today = new Date();
-
-    const passedDays = Math.floor(
-      (today - start) / (1000 * 60 * 60 * 24)
-    );
-
-    const remaining = duration - passedDays;
-
-    return remaining > 0 ? remaining : 0;
-
+  // Completion Chart
+  const completionData = {
+    labels: ["Completed", "In Progress"],
+    datasets: [
+      {
+        data: [completed, inProgress],
+        backgroundColor: ["#22C55E", "#F59E0B"]
+      }
+    ]
   };
-
-  // Stats
-  const totalSkills = skills.length;
-
-  const completed = skills.filter(
-    (s) => s.progressPercentage === 100
-  ).length;
-
-  const inProgress = skills.filter(
-    (s) => s.progressPercentage < 100
-  ).length;
-
-  // const menuItems = [
-  //   { name: "Dashboard", icon: <FaTachometerAlt />, path: "/employeeDashboard" },
-  //   { name: "Progress Tracker", icon: <FaChartLine />, path: "/progress" },
-  //   { name: "Consistency", icon: <FaFire />, path: "/consistency" },
-  //   { name: "Completed Skills", icon: <FaCheckCircle />, path: "/completed" },
-  //   { name: "Profile", icon: <FaUser />, path: "/profile" },
-  //   { name: "Logout", icon: <FaSignOutAlt /> }
-  // ];
 
   return (
 
-    <div className="flex bg-gray-100 min-h-screen">
+    <div className="space-y-8 text-gray-900 dark:text-gray-100">
+    
 
-      {/* Mobile Menu
-      <button
-        onClick={() => setMenuOpen(!menuOpen)}
-        className="md:hidden fixed top-4 right-4 z-50 bg-blue-600 text-white p-2 rounded"
-      >
-        <FaBars />
-      </button> */}
+      {/* Dashboard Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
 
-      {/* Sidebar
-      <div
-        className={`bg-white w-64 h-screen shadow-lg fixed md:static
-        transform ${menuOpen ? "translate-x-0" : "-translate-x-full"}
-        md:translate-x-0 transition-transform`}
-      >
-
-        <div className="p-6">
-
-          <h2 className="text-2xl font-bold text-blue-600 mb-8">
-            SkillTrack
-          </h2>
-
-          <nav className="flex flex-col gap-2">
-
-            {menuItems.map((item, index) => (
-
-              <button
-                key={index}
-                onClick={() => {
-
-                  if (item.name === "Logout") {
-                    handleLogout();
-                  } else if (item.path) {
-                    navigate(item.path);
-                  }
-
-                }}
-                className={`flex items-center gap-3 px-4 py-2 rounded
-                hover:bg-blue-50 hover:text-blue-600
-                ${item.name === "Logout" ? "hover:text-red-600" : ""}`}
-              >
-
-                {item.icon}
-                {item.name}
-
-              </button>
-
-            ))}
-
-          </nav> */}
-
-        {/* </div>
-
-      </div> */}
-
-      {/* Main Content */}
-      <div className="flex-1 p-6">
-
-        <h1 className="text-3xl font-bold mb-8">
-          Employee Dashboard
-        </h1>
-
-        {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-
-          <div className="bg-white rounded-xl shadow p-6 flex justify-between items-center">
-            <div>
-              <p className="text-gray-500 text-sm">Total Skills</p>
-              <h2 className="text-2xl font-bold">{totalSkills}</h2>
-            </div>
-            <FaCode className="text-blue-600 text-2xl" />
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow p-6 flex justify-between items-center">
+          <div>
+            <p className="text-gray-500 dark:text-gray-300 text-sm">Total Skills</p>
+            <h2 className="text-2xl font-bold">{totalSkills}</h2>
           </div>
-
-          <div className="bg-white rounded-xl shadow p-6 flex justify-between items-center">
-            <div>
-              <p className="text-gray-500 text-sm">Completed</p>
-              <h2 className="text-2xl font-bold">{completed}</h2>
-            </div>
-            <FaCheckCircle className="text-green-600 text-2xl" />
-          </div>
-
-          <div className="bg-white rounded-xl shadow p-6 flex justify-between items-center">
-            <div>
-              <p className="text-gray-500 text-sm">In Progress</p>
-              <h2 className="text-2xl font-bold">{inProgress}</h2>
-            </div>
-            <FaChartLine className="text-yellow-600 text-2xl" />
-          </div>
-
-          <div className="bg-white rounded-xl shadow p-6 flex justify-between items-center">
-            <div>
-              <p className="text-gray-500 text-sm">Learning Streak</p>
-              <h2 className="text-2xl font-bold">7 Days</h2>
-            </div>
-            <FaFire className="text-red-600 text-2xl" />
-          </div>
-
+          <FaCode className="text-blue-600 text-2xl"/>
         </div>
 
-        {/* Skills Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
-          {/* My Skills */}
-          <div className="bg-white p-6 rounded-xl shadow-lg">
-
-            <h2 className="text-xl font-semibold mb-6">
-              My Skills
-            </h2>
-
-            <div className="grid md:grid-cols-2 gap-4">
-
-              {skills.map((s) => (
-
-                <div
-                  key={s.id}
-                  className="p-5 bg-gray-50 rounded-xl border hover:shadow-md transition"
-                >
-
-                  <div className="flex items-center gap-3 mb-3">
-
-                    {getCategoryIcon(s.category)}
-
-                    <div>
-                      <p className="font-semibold text-gray-800">
-                        {s.skillName}
-                      </p>
-
-                      <p className="text-xs text-gray-500">
-                        {s.category}
-                      </p>
-                    </div>
-
-                  </div>
-
-                  <div className="mb-2 flex justify-between text-sm">
-                    <span>Progress</span>
-                    <span>{s.progressPercentage}%</span>
-                  </div>
-
-                  <div className="w-full bg-gray-200 h-2 rounded mb-3">
-
-                    <div
-                      className="bg-blue-600 h-2 rounded"
-                      style={{ width: `${s.progressPercentage}%` }}
-                    />
-
-                  </div>
-
-                  <p className="text-xs text-gray-500 mb-3">
-                    Remaining Days:{" "}
-                    {getRemainingDays(
-                      s.startDate,
-                      s.targetDurationDays
-                    )}
-                  </p>
-
-                  <button
-                    onClick={() =>
-                      updateProgress(s.id, s.progressPercentage)
-                    }
-                    className="bg-green-500 text-white px-3 py-1 rounded text-xs hover:bg-green-600"
-                  >
-                    Update Progress
-                  </button>
-
-                </div>
-
-              ))}
-
-            </div>
-
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow p-6 flex justify-between items-center">
+          <div>
+            <p className="text-gray-500 dark:text-gray-300 text-sm">Completed</p>
+            <h2 className="text-2xl font-bold">{completed}</h2>
           </div>
+          <FaCheckCircle className="text-green-600 text-2xl"/>
+        </div>
 
-          {/* Add Skill */}
-         <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow p-6 flex justify-between items-center">
+          <div>
+            <p className="text-gray-500 dark:text-gray-300 text-sm">In Progress</p>
+            <h2 className="text-2xl font-bold">{inProgress}</h2>
+          </div>
+          <FaChartLine className="text-yellow-600 text-2xl"/>
+        </div>
 
-  <div className="flex items-center gap-3 mb-6">
-    <div className="bg-blue-100 text-blue-600 p-3 rounded-lg">
-      <FaCode />
-    </div>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow p-6 flex justify-between items-center">
+          <div>
+            <p className="text-gray-500 dark:text-gray-300 text-sm">Learning Streak</p>
+            <h2 className="text-2xl font-bold">7 Days</h2>
+          </div>
+          <FaFire className="text-red-600 text-2xl"/>
+        </div>
 
-    <h2 className="text-xl font-semibold text-gray-800">
-      Add New Skill
-    </h2>
-  </div>
+      </div>
 
-  {/* Skill Name */}
-  <div className="mb-4">
-    <label className="text-sm text-gray-600 font-medium">
-      Skill Name
-    </label>
+      {/* Charts Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-    <input
-      type="text"
-      placeholder="Enter skill (React, Java, Spring Boot...)"
-      value={skillName}
-      onChange={(e) => setSkillName(e.target.value)}
-      className="w-full mt-2 border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 p-3 rounded-lg outline-none transition"
-    />
-  </div>
+        {/* Category Chart */}
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow">
+          <h2 className="text-lg font-semibold mb-4">
+            Skill Categories
+          </h2>
 
-  {/* Category */}
-  <div className="mb-4">
-    <label className="text-sm text-gray-600 font-medium">
-      Category
-    </label>
+          <div className="h-64">
+            <Pie data={categoryData} options={chartOptions}/>
+          </div>
+        </div>
 
-    <select
-      value={category}
-      onChange={(e) => setCategory(e.target.value)}
-      className="w-full mt-2 border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 p-3 rounded-lg outline-none transition"
-    >
-      <option value="">Select Category</option>
-      <option value="Programming">Programming</option>
-      <option value="Frontend">Frontend</option>
-      <option value="Backend">Backend</option>
-      <option value="Database">Database</option>
-      <option value="DevOps">DevOps</option>
-      <option value="General">General</option>
-    </select>
-  </div>
+        {/* Progress Chart */}
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow">
+          <h2 className="text-lg font-semibold mb-4">
+            Skill Progress
+          </h2>
 
-  {/* Duration */}
-  <div className="mb-6">
-    <label className="text-sm text-gray-600 font-medium">
-      Target Duration
-    </label>
+          <div className="h-64">
+            <Bar data={progressData} options={chartOptions}/>
+          </div>
+        </div>
 
-    <input
-      type="number"
-      placeholder="Enter duration in days"
-      value={duration}
-      onChange={(e) => setDuration(e.target.value)}
-      className="w-full mt-2 border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 p-3 rounded-lg outline-none transition"
-    />
-  </div>
+        {/* Completion Chart */}
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow">
+          <h2 className="text-lg font-semibold mb-4">
+            Completion Overview
+          </h2>
 
-  {/* Button */}
-  <button
-    onClick={handleAddSkill}
-    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-lg transition"
-  >
-    Add Skill
-  </button>
+          <div className="h-64">
+            <Pie data={completionData} options={chartOptions}/>
+          </div>
+        </div>
 
-</div>
+        {/* Learning Trend */}
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow">
+          <h2 className="text-lg font-semibold mb-4">
+            Learning Trend
+          </h2>
 
+          <div className="h-64">
+            <Line data={progressData} options={chartOptions}/>
+          </div>
         </div>
 
       </div>

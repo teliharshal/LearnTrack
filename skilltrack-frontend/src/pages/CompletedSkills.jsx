@@ -30,7 +30,7 @@ const CompletedSkills = () => {
 
   return (
 
-    <div className="p-2">
+    <div className="p-2 text-gray-900 dark:text-gray-100">
 
       <h1 className="text-3xl font-bold mb-8">
         Completed Skills
@@ -42,7 +42,7 @@ const CompletedSkills = () => {
 
           <div
             key={skill.id}
-            className="bg-white shadow-lg rounded-xl p-6 border hover:shadow-xl transition"
+            className="bg-white dark:bg-gray-800 shadow-lg rounded-xl p-6 border border-gray-200 dark:border-gray-700 hover:shadow-xl transition"
           >
 
             <div className="flex justify-between items-center mb-4">
@@ -55,15 +55,15 @@ const CompletedSkills = () => {
 
             </div>
 
-            <p className="text-gray-500 mb-3">
+            <p className="text-gray-500 dark:text-gray-300 mb-3">
               Category: {skill.category}
             </p>
 
-            <p className="text-gray-500 mb-3">
+            <p className="text-gray-500 dark:text-gray-300 mb-3">
               Started: {skill.startDate}
             </p>
 
-            <p className="text-gray-500 mb-3">
+            <p className="text-gray-500 dark:text-gray-300 mb-3">
               Target: {skill.targetDate}
             </p>
 
@@ -76,7 +76,7 @@ const CompletedSkills = () => {
 
               </div>
 
-              <div className="w-full bg-gray-200 rounded-full h-3">
+              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
 
                 <div
                   className="bg-green-500 h-3 rounded-full"

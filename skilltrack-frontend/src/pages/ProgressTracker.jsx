@@ -26,6 +26,8 @@ ChartJS.register(
 const ProgressTracker = () => {
 
   const [skills, setSkills] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   const employeeId = Number(localStorage.getItem("employeeId"));
 
@@ -48,6 +50,15 @@ const ProgressTracker = () => {
     }
 
   };
+
+  const totalPages = Math.max(1, Math.ceil(skills.length / itemsPerPage));
+  const currentSkills = skills.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
 
   const updateProgress = async (skillId, progress) => {
 
@@ -119,7 +130,7 @@ const ProgressTracker = () => {
 
   return (
 
-    <div className="p-2 md:p-2 bg-gray-100 min-h-screen">
+    <div className="p-2 md:p-2 bg-gray-100 dark:bg-gray-900 min-h-screen text-gray-900 dark:text-gray-100">
 
       {/* Header */}
       <div className="flex items-center gap-3 mb-8">
@@ -134,13 +145,13 @@ const ProgressTracker = () => {
 
       {/* TABLE FIRST */}
 
-      <div className="bg-white rounded-xl shadow p-6 mb-8 overflow-x-auto">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow p-6 mb-4 overflow-x-auto">
 
         <table className="w-full text-left">
 
-          <thead className="border-b">
+          <thead className="border-b border-gray-200 dark:border-gray-700">
 
-            <tr className="text-gray-600 text-sm">
+            <tr className="text-gray-600 dark:text-gray-300 text-sm">
 
               <th className="p-3">Skill</th>
               <th className="p-3">Category</th>
@@ -154,13 +165,13 @@ const ProgressTracker = () => {
 
           <tbody>
 
-            {skills.map((skill) => (
+            {currentSkills.length > 0 ? (
+              currentSkills.map((skill) => (
 
               <tr
                 key={skill.id}
-                className="border-b hover:bg-gray-50"
+                className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700"
               >
-
                 <td className="p-3 font-medium">
                   {skill.skillName}
                 </td>
@@ -173,7 +184,7 @@ const ProgressTracker = () => {
 
                   <div className="flex items-center gap-3">
 
-                    <div className="w-full bg-gray-200 h-2 rounded">
+                    <div className="w-full bg-gray-200 dark:bg-gray-700 h-2 rounded">
 
                       <div
                         className="bg-blue-600 h-2 rounded"
@@ -228,12 +239,42 @@ const ProgressTracker = () => {
 
               </tr>
 
-            ))}
+              ))
+            ) : (
+              <tr>
+                <td colSpan={5} className="p-6 text-center text-gray-500 dark:text-gray-300">
+                  No skills found.
+                </td>
+              </tr>
+            )}
 
           </tbody>
 
         </table>
 
+      </div>
+
+      {/* Pagination */}
+      <div className="flex items-center justify-between mb-8">
+        <div className="text-sm text-gray-600 dark:text-gray-300">
+          Page {currentPage} of {totalPages}
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+            disabled={currentPage === 1}
+            className="px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-100 disabled:opacity-40"
+          >
+            Previous
+          </button>
+          <button
+            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+            disabled={currentPage === totalPages}
+            className="px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-100 disabled:opacity-40"
+          >
+            Next
+          </button>
+        </div>
       </div>
 
       {/* CHARTS BELOW TABLE */}
@@ -242,7 +283,7 @@ const ProgressTracker = () => {
 
         {/* Bar Chart */}
 
-        <div className="bg-white p-6 rounded-xl shadow">
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow">
 
           <h2 className="font-semibold mb-4">
             Skill Progress
@@ -261,7 +302,7 @@ const ProgressTracker = () => {
 
         {/* Pie Chart */}
 
-        <div className="bg-white p-6 rounded-xl shadow">
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow">
 
           <h2 className="font-semibold mb-4">
             Skill Categories

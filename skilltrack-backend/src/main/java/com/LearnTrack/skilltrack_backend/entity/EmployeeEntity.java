@@ -18,7 +18,6 @@ public class EmployeeEntity {
     private String department;
     private String role;
 
-    @JsonIgnore
     private String password;
 
     public String getPassword() {

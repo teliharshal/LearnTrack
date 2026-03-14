@@ -30,17 +30,17 @@ const Profile = () => {
 
   };
 
-  if (!employee) return <p>Loading...</p>;
+  if (!employee) return <p className="text-gray-900 dark:text-gray-100">Loading...</p>;
 
   return (
 
-    <div className="p-6">
+    <div className="p-6 text-gray-900 dark:text-gray-100">
 
       <h1 className="text-3xl font-bold mb-8">
         My Profile
       </h1>
 
-      <div className="bg-white shadow-lg rounded-xl p-8 max-w-xl">
+      <div className="bg-white dark:bg-gray-800 shadow-lg rounded-xl p-8 max-w-xl">
 
         <div className="flex items-center mb-6">
 
@@ -56,8 +56,8 @@ const Profile = () => {
               {employee.name}
             </h2>
 
-            <p className="text-gray-500">
-              {employee.role}
+            <p className="text-gray-500 dark:text-gray-300">
+              Employee
             </p>
 
           </div>
@@ -68,7 +68,7 @@ const Profile = () => {
 
           <div>
 
-            <p className="text-gray-500">Email</p>
+            <p className="text-gray-500 dark:text-gray-300">Email</p>
 
             <p className="font-medium">
               {employee.email}
@@ -78,20 +78,10 @@ const Profile = () => {
 
           <div>
 
-            <p className="text-gray-500">Department</p>
+            <p className="text-gray-500 dark:text-gray-300">Department</p>
 
             <p className="font-medium">
               {employee.department || "Not Assigned"}
-            </p>
-
-          </div>
-
-          <div>
-
-            <p className="text-gray-500">Role</p>
-
-            <p className="font-medium">
-              {employee.role}
             </p>
 
           </div>

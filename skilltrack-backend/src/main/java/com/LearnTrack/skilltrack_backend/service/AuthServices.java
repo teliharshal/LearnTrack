@@ -6,6 +6,7 @@ import com.LearnTrack.skilltrack_backend.repository.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+
 @Service
 public class AuthServices {
 
@@ -32,9 +33,14 @@ public class AuthServices {
 
     public EmployeeEntity registerEmployee(EmployeeEntity employee) {
 
-        // default role
+        if(employee.getPassword() == null || employee.getPassword().isEmpty()){
+            throw new RuntimeException("Password cannot be empty");
+        }
+
         employee.setRole("ROLE_EMPLOYEE");
 
         return repository.save(employee);
     }
+
+
 }
